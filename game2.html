@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
+    <title>Misi Pilah Sampah</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            
+            /* Latar belakang sekarang menggunakan foto */
+            background-image: url('bg.jpeg'); /* GANTI NAMA FILE INI */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+        }
+
+        .startpage {
+            width: 80%;
+            max-width: 500px;
+            margin: auto;
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            /* Menambahkan sedikit background transparan agar teks lebih mudah dibaca */
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .startpage img {
+            display: block;
+            width: 350px;
+            margin-bottom: 10px;
+        }
+        
+        .startpage h2{
+            color: white;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .startpage button#start {
+            color: white;
+            background-color: #4CAF50; /* Green */
+            border-radius: 8px;
+            padding: 15px 80px;
+            margin: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: .8;
+        }
+
+        /* --- STORY SECTION (UNCHANGED) --- */
+        .story {
+            position: absolute;
+            display: none;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .story .relative {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .story img {
+            width: 350px;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+
+        .story #app {
+            bottom: 30px;
+            left: 30px;
+            width: 70%;
+            padding: 80px;
+            border-radius: 5px;
+            position: absolute;
+            background-color: rgba(0, 0, 0, .8);
+            color: aliceblue;
+            font-size: 25px;
+        }
+
+        .story button {
+            background-color: transparent;
+            border: none;
+            position: absolute;
+            right: 2%;
+            top: 2%;
+            color: aliceblue;
+            font-size: 25px;
+            cursor: pointer;
+        }
+        /* --- END OF STORY SECTION --- */
+
+
+        /* --- GAME SECTION (MODIFIED) --- */
+        main {
+            visibility: hidden;
+            position: absolute;
+            width: 100%;
+            max-width: 450px; /* Game arena width */
+            height: 100vh;
+            background: url("park_background.jpeg");
+            background-size: cover;
+            background-repeat: repeat-y;
+            margin: 0 auto;
+            top: 0px;
+            border: 5px solid #5d4037;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        #game-ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #game-ui #lives {
+            font-size: 30px;
+        }
+
+        #arena {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #player {
+            position: absolute;
+            z-index: 10;
+            width: 80px;
+            height: 100px;
+            background-image: url("trashcan.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: background-image 0.3s;
+        }
+        
+        #player.shielded {
+            background-image: url("trashcan_shielded.png");
+        }
+
+        .falling-object {
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .rock {
+            width: 70px;
+            height: 70px;
+            background-image: url("rock.png");
+        }
+        
+        .trash.bottle {
+            width: 40px;
+            height: 60px;
+            background-image: url("trash_bottle.png");
+        }
+        
+        .trash.can {
+            width: 50px;
+            height: 50px;
+            background-image: url("trash_can.png");
+        }
+
+        .powerup.shield {
+             width: 60px;
+             height: 60px;
+             background-image: url("powerup_shield.png");
+        }
+        
+
+        /* --- CONTROL & POPUP SECTION (UNCHANGED) --- */
+        .control {
+            display: none;
+            z-index: 999;
+        }
+
+        .control-btn {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            bottom: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        #left-btn {
+            background-image: url("left.png");
+            background-size: cover;
+            right: 120px;
+        }
+
+        #right-btn {
+            background-image: url("right.png");
+            background-size: cover;
+            right: 20px;
+        }
+        
+        .popup {
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 15, 15, .9);
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
+        }
+
+        .popup-content {
+            background-color: #3e2723;
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            border: 5px solid #d7ccc8;
+            box-shadow: 0 0 40px #ff7043;
+        }
+        .popup-content h1 {
+            font-size: 48px;
+            margin: 0;
+            color: #ff5722;
+        }
+         .popup-content h2 {
+            font-size: 24px;
+            margin: 15px 0;
+        }
+        .popup-content button {
+            color: white;
+            background-color: #ff5722;
+            border-radius: 8px;
+            padding: 15px 40px;
+            margin-top: 20px;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="startpage">
+        <img src="logo.png" alt="Game Logo">
+        <h2 id="highScoreDisplay">High Score: 0</h2>
+        <button id="start"><h2>PLAY</h2></button>
+    </div>
+
+    <div id="story" class="story">
+        <div class="relative">
+            <button id="skip"><span class="material-symbols-outlined">skip_next</span></button>
+            <img id="storyimg" src="maskot.png" alt="">
+            <div id="app"></div>
+        </div>
+    </div>
+    
+    <audio id="collect-sound" src="collect.mp3" preload="auto"></audio>
+    <audio id="hit-sound" src="hit.mp3" preload="auto"></audio>
+    <audio id="powerup-sound" src="powerup.mp3" preload="auto"></audio>
+    <audio id="background-music" src="background_music.mp3" loop preload="auto"></audio>
+    <audio id="gameover-music" src="gameover_music.mp3" preload="auto"></audio>
+
+    <main>
+        <div id="game-ui">
+            <div id="score">Score: 0</div>
+            <div id="lives">❤️❤️❤️</div>
+        </div>
+        <div id="arena">
+          <div id="player"></div>
+        </div>
+    </main>
+
+    <div class="control">
+        <div id="left-btn" class="control-btn"></div>
+        <div id="right-btn" class="control-btn"></div>
+    </div>
+
+    <div id="gameover" class="popup">
+        <div class="popup-content">
+            <h1>GAME OVER</h1>
+            <h2 id="finalScore">Your Score: 0</h2>
+            <h2 id="newHighScore">New High Score!</h2>
+            <button id="restart">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM ELEMENTS ---
+        const startpage = document.querySelector(".startpage");
+        const startBtn = document.getElementById("start");
+        const storyPage = document.getElementById("story");
+        const storySkipBtn = document.getElementById("skip");
+        const app = document.getElementById('app');
+        const storyimg = document.getElementById("storyimg");
+        
+        const gameArena = document.querySelector("main");
+        const arena = document.getElementById("arena");
+        const player = document.getElementById("player");
+        const scoreDisplay = document.getElementById("score");
+        const livesDisplay = document.getElementById("lives");
+        const highScoreDisplay = document.getElementById("highScoreDisplay");
+
+        const controls = document.querySelector(".control");
+        const leftBtn = document.getElementById("left-btn");
+        const rightBtn = document.getElementById("right-btn");
+        
+        const gameOverPopup = document.getElementById("gameover");
+        const restartBtn = document.getElementById("restart");
+        const finalScoreDisplay = document.getElementById("finalScore");
+        const newHighScoreDisplay = document.getElementById("newHighScore");
+
+        // Audio Elements
+        const collectSound = document.getElementById("collect-sound");
+        const hitSound = document.getElementById("hit-sound");
+        const powerupSound = document.getElementById("powerup-sound");
+        const backgroundMusic = document.getElementById("background-music");
+        const gameOverMusic = document.getElementById("gameover-music");
+
+
+        // --- GAME STATE & CONFIGURATION ---
+        let score = 0;
+        let playerLives = 3;
+        let gameSpeed = 3;
+        let isGameOver = false;
+        let isShielded = false;
+        let highScore = localStorage.getItem('trashGameHighScore') || 0;
+
+        const trashTypes = [
+            { class: 'trash bottle', points: 3 },
+            { class: 'trash can', points: 1 }
+        ];
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            highScoreDisplay.textContent = `High Score: ${highScore}`;
+        });
+
+        startBtn.addEventListener("click", () => {
+            startpage.style.display = "none";
+            startStory();
+        });
+
+        storySkipBtn.addEventListener("click", () => {
+            storyPage.style.display = "none";
+            startGame();
+        });
+
+        // --- STORY FUNCTION (UNCHANGED) ---
+        function startStory() {
+            storyPage.style.display = "block";
+            storyimg.style.animation = "kanan 2s"; // Assuming 'kanan' animation exists
+            const typewriter = new Typewriter(app, { loop: false, delay: 50 });
+
+            typewriter.typeString('Di sebuah taman kota yang indah...')
+                .pauseFor(1000)
+                .deleteAll()
+                .typeString('Banyak orang tidak peduli dan membuang sampah sembarangan.')
+                .pauseFor(1000)
+                .deleteAll()
+                .typeString('Tugasmu adalah membersihkannya sebelum semuanya terlambat!')
+                .pauseFor(2000)
+                .start();
+        }
+        
+        // --- GAME LOGIC ---
+        function startGame() {
+            score = 0;
+            playerLives = 3;
+            gameSpeed = 3;
+            isGameOver = false;
+            isShielded = false;
+
+            scoreDisplay.textContent = `Score: ${score}`;
+            livesDisplay.innerHTML = '❤️❤️❤️';
+            player.classList.remove('shielded');
+            
+            gameOverPopup.style.visibility = "hidden";
+            gameOverPopup.style.opacity = 0;
+            gameArena.style.visibility = "visible";
+            controls.style.display = "block";
+            
+            arena.querySelectorAll('.falling-object').forEach(obj => obj.remove());
+
+            if (gameOverMusic) gameOverMusic.pause();
+            if (backgroundMusic) {
+                backgroundMusic.currentTime = 0;
+                backgroundMusic.play();
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        let lastObjectTime = 0;
+        let backgroundY = 0;
+
+        function gameLoop(timestamp) {
+            if (isGameOver) return;
+            
+            backgroundY += gameSpeed / 2;
+            gameArena.style.backgroundPositionY = backgroundY + "px";
+
+            if (timestamp - lastObjectTime > (1000 / (gameSpeed / 2))) {
+                spawnObject();
+                lastObjectTime = timestamp;
+            }
+
+            document.querySelectorAll('.falling-object').forEach(obj => {
+                moveObject(obj);
+            });
+            
+            checkDifficulty();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function spawnObject() {
+            const obj = document.createElement('div');
+            obj.classList.add('falling-object');
+
+            const rand = Math.random();
+            if (rand < 0.1 && score > 20) {
+                obj.classList.add('powerup', 'shield');
+                obj.dataset.type = 'shield';
+            } else if (rand < 0.45) {
+                obj.classList.add('rock');
+                obj.dataset.type = 'rock';
+            } else {
+                const trashType = trashTypes[Math.floor(Math.random() * trashTypes.length)];
+                trashType.class.split(' ').forEach(c => obj.classList.add(c));
+                obj.dataset.type = 'trash';
+                obj.dataset.points = trashType.points;
+            }
+            
+            obj.style.top = '-100px';
+            obj.style.left = Math.random() * (gameArena.clientWidth - 80) + 'px';
+            arena.appendChild(obj);
+        }
+
+        function moveObject(obj) {
+            let currentTop = parseInt(obj.style.top);
+            obj.style.top = (currentTop + gameSpeed) + 'px';
+            
+            if (checkCollision(player, obj)) {
+                handleCollision(obj);
+            }
+            
+            else if (currentTop > window.innerHeight) {
+                obj.remove();
+            }
+        }
+
+        function checkCollision(a, b) {
+            const rectA = a.getBoundingClientRect();
+            const rectB = b.getBoundingClientRect();
+            return !(rectA.right < rectB.left || rectA.left > rectB.right || rectA.bottom < rectB.top || rectA.top > rectB.bottom);
+        }
+
+        function handleCollision(obj) {
+            const type = obj.dataset.type;
+
+            if (type === 'rock') {
+                if (isShielded) {
+                    isShielded = false;
+                    player.classList.remove('shielded');
+                    powerupSound.currentTime = 0;
+                    powerupSound.play();
+                } else {
+                    playerLives--;
+                    hitSound.currentTime = 0;
+                    hitSound.play();
+                    updateLivesUI();
+                    if (playerLives <= 0) {
+                        endGame();
+                    }
+                }
+            } else if (type === 'trash') {
+                score += parseInt(obj.dataset.points);
+                scoreDisplay.textContent = `Score: ${score}`;
+                collectSound.currentTime = 0; // PERBAIKAN: Reset suara sebelum diputar
+                collectSound.play();
+            } else if (type === 'shield') {
+                isShielded = true;
+                player.classList.add('shielded');
+                powerupSound.currentTime = 0; // PERBAIKAN: Reset suara sebelum diputar
+                powerupSound.play();
+                setTimeout(() => {
+                    isShielded = false;
+                    player.classList.remove('shielded');
+                }, 5000);
+            }
+
+            obj.remove();
+        }
+        
+        function updateLivesUI() {
+            livesDisplay.textContent = '❤️'.repeat(playerLives) + '🤍'.repeat(3 - playerLives);
+        }
+
+        function checkDifficulty() {
+            if (score > 100) gameSpeed = 7;
+            else if (score > 50) gameSpeed = 6;
+            else if (score > 20) gameSpeed = 4;
+        }
+
+        function endGame() {
+            isGameOver = true;
+            
+            if (backgroundMusic) backgroundMusic.pause();
+            if (gameOverMusic) {
+                gameOverMusic.currentTime = 0;
+                gameOverMusic.play();
+            }
+            
+            finalScoreDisplay.textContent = `Your Score: ${score}`;
+            newHighScoreDisplay.style.display = 'none';
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('trashGameHighScore', highScore);
+                newHighScoreDisplay.style.display = 'block';
+                highScoreDisplay.textContent = `High Score: ${highScore}`;
+            }
+
+            gameOverPopup.style.visibility = "visible";
+            gameOverPopup.style.opacity = 1;
+        }
+
+        // --- CONTROLS ---
+        function movePlayer(e) {
+            if (isGameOver) return;
+            const playerRect = player.getBoundingClientRect();
+            const arenaRect = gameArena.getBoundingClientRect();
+            
+            if (e.key === 'ArrowLeft' || e.target.id === 'left-btn') {
+                if (playerRect.left > arenaRect.left) {
+                    player.style.left = (player.offsetLeft - 20) + 'px';
+                }
+            } else if (e.key === 'ArrowRight' || e.target.id === 'right-btn') {
+                if (playerRect.right < arenaRect.right) {
+                    player.style.left = (player.offsetLeft + 20) + 'px';
+                }
+            }
+        }
+        
+        restartBtn.addEventListener("click", startGame);
+        window.addEventListener("keydown", movePlayer);
+        leftBtn.addEventListener("click", movePlayer);
+        rightBtn.addEventListener("click", movePlayer);
+
+    </script>
+</body>
+</html>
